@@ -1,0 +1,173 @@
+{
+  "containerClasses": [
+    "sidenav",
+    "py-lg",
+    "px-md",
+    "d-flex",
+    "flex-column",
+    "align-items-center",
+    "shadow-sm",
+    "bg-neutral-100",
+    "relative",
+    "transition-ease-in-out-03"
+  ],
+  "items": [
+    {
+      "id": "logo-container",
+      "type": "container",
+      "classes": [
+        "sidenav-logo-container",
+        "d-flex",
+        "align-items-center",
+        "justify-content-center",
+        "transition-ease-in-out-03"
+      ],
+      "children": [
+        {
+          "id": "logo-image",
+          "type": "image",
+          "classes": [
+            "sidenav-logo-image"
+          ],
+          "imageSrc": "",
+          "altText": "Logo",
+          "bindKey": "logoSrc"
+        }
+      ]
+    },
+    {
+      "id": "divider",
+      "type": "container",
+      "classes": [
+        "border-sm-neutral-225",
+        "my-3"
+      ],
+      "children": []
+    },
+    {
+      "id": "menu-container",
+      "type": "container",
+      "classes": [
+        "relative"
+      ],
+      "children": [
+        {
+          "id": "sidenav-active-indicator",
+          "type": "container",
+          "classes": [
+            "sidenav-active-indicator",
+            "absolute",
+            "d-flex",
+            "align-items-center"
+          ],
+          "bindKey": "menuIndicator",
+          "children": [
+            {
+              "id": "indicator-inner",
+              "type": "container",
+              "classes": [
+                "sidenav-active-indicator-inner",
+                "bg-primary",
+                "transition-ease-in-out-03"
+              ],
+              "altText": "Indicator Icon"
+            }
+          ]
+        },
+        {
+          "id": "sidenav-items-placeholder",
+          "type": "menuItem",
+          "classes": []
+        }
+      ]
+    },
+    {
+      "id": "menu-toggle",
+      "type": "button",
+      "classes": [
+        "sidenav-toggle",
+        "p-2",
+        "d-flex",
+        "bg-neutral-100",
+        "transition-ease-in-out-03",
+        "absolute",
+        "shadow-sm",
+        "border-sm-neutral-225"
+      ],
+      "clickAction": "onToggleMenu",
+      "children": [
+        {
+          "id": "toggle-icon",
+          "type": "image",
+          "classes": [],
+          "imageSrc": "",
+          "altText": "Toggle Menu",
+          "bindKey": "toggleIcon"
+        }
+      ]
+    }
+  ],
+  "menuItemsConfig": {
+    "dashboard": {
+      "route": "/dashboard",
+      "label": "Dashboard",
+      "iconBase": "dashboard",
+      "order": 1
+    },
+    "reports": {
+      "route": "/reports",
+      "label": "Reports",
+      "iconBase": "reports",
+      "order": 2
+    },
+    "group-products": {
+      "route": "/group-products",
+      "label": "Group Products",
+      "iconBase": "group",
+      "order": 3
+    },
+    "total-count": {
+      "route": "/total-count",
+      "label": "Total Count",
+      "iconBase": "count",
+      "order": 4
+    }
+  },
+  "menuItemTemplate": {
+    "type": "button",
+    "classes": [
+      "sidenav-items",
+      "d-flex",
+      "align-items-center",
+      "bg-inherit",
+      "rounded-default",
+      "gap-smd",
+      "p-3",
+      "w-100",
+      "transition-ease-in-out-02"
+    ],
+    "clickAction": "onMenuItemClick",
+    "children": [
+      {
+        "type": "image",
+        "classes": [
+          "sidenav-item-icon",
+          "transition-ease-in-out-02"
+        ],
+        "imageSrc": "",
+        "altText": "{label}"
+      },
+      {
+        "type": "text",
+        "classes": [
+          "sidenav-item-label",
+          "text-sm",
+          "font-regular",
+          "text-dark",
+          "transition-ease-in-out-03"
+        ],
+        "content": ""
+      }
+    ]
+  }
+}
