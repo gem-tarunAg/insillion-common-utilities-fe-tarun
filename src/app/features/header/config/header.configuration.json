@@ -1,0 +1,140 @@
+{
+  "containerClasses": [
+    "bg-neutral-100",
+    "py-sm",
+    "px-lg",
+    "d-flex",
+    "justify-content-end",
+    "align-items-start",
+    "shadow-md"
+  ],
+  "items": [
+    {
+      "id": "header-right",
+      "type": "container",
+      "classes": [
+        "gap-mdl",
+        "d-flex",
+        "align-items-center"
+      ],
+      "children": [
+        {
+          "id": "search-section",
+          "type": "button",
+          "classes": [
+            "search-icon",
+            "rounded-sm",
+            "d-flex",
+            "align-items-center",
+            "justify-content-center",
+            "p-sm",
+            "border-none",
+            "bg-neutral-50"
+          ],
+          "clickAction": "onSearchClicked",
+          "children": [
+            {
+              "id": "search-image",
+              "type": "image",
+              "classes": [],
+              "imageSrc": "assets/icons/search-icon.svg",
+              "altText": "Search"
+            }
+          ]
+        },
+        {
+          "id": "user-info-section",
+          "type": "container",
+          "classes": [
+            "cursor-click",
+            "d-flex",
+            "align-items-center",
+            "gap-sm"
+          ],
+          "clickAction": "onUserInfoClicked",
+          "children": [
+            {
+              "id": "user-avatar",
+              "type": "image",
+              "classes": [
+                "rounded-default"
+              ],
+              "imageSrc": "",
+              "altText": "User Avatar",
+              "bindKey": "userAvatar"
+            },
+            {
+              "id": "user-name",
+              "type": "text",
+              "classes": [
+                "font-medium",
+                "text-sm",
+                "text-dark"
+              ],
+              "content": "",
+              "bindKey": "userName"
+            },
+            {
+              "id": "user-dropdown-icon",
+              "type": "image",
+              "classes": [],
+              "imageSrc": "assets/icons/caret-down.svg",
+              "altText": "Dropdown"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-modal",
+      "type": "modal",
+      "classes": [
+        "logout-menu",
+        "rounded-default",
+        "mt-2",
+        "ms-5",
+        "shadow-md",
+        "ps-3",
+        "pe-5",
+        "py-3",
+        "border-sm-neutral-250",
+        "absolute",
+        "bg-surface"
+      ],
+      "showCondition": "dropdownOpen",
+      "triggerItemId": "user-info-section",
+      "children": [
+        {
+          "id": "logout-option",
+          "type": "button",
+          "classes": [
+            "dropdown-item",
+            "d-flex",
+            "align-items-center",
+            "gap-md"
+          ],
+          "clickAction": "onLogout",
+          "children": [
+            {
+              "id": "logout-icon",
+              "type": "image",
+              "classes": [],
+              "imageSrc": "assets/icons/sign-out.svg",
+              "altText": "Logout Icon"
+            },
+            {
+              "id": "logout-text",
+              "type": "text",
+              "classes": [
+                "text-red",
+                "font-medium",
+                "text-base"
+              ],
+              "content": "Log out"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
