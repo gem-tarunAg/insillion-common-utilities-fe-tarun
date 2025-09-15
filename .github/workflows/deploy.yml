@@ -1,0 +1,33 @@
+name: Deploy common-utilities to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web components
+        # This command runs your Angular build with the production configuration
+        run: npm run build:elements
+
+      - name: Deploy to GitHub Pages
+        # This action takes the output of your build and publishes it to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # This is the path to the directory containing your build artifacts
+          publish_dir: ./dist/insillion-common-utilities-fe-tarun
