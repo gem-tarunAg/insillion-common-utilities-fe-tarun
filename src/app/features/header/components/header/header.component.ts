@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
 import { RenderItemComponent } from '../../../../shared/components/render-item/render-item.component';
 import { HeaderDynamicState } from '../../models/header.config.interface';
 import { HeaderConfigService } from '../../services/header.config.service';
@@ -20,7 +19,6 @@ export class HeaderComponent {
   };
 
   private headerConfigService: HeaderConfigService = inject(HeaderConfigService);
-  private router: Router = inject(Router);
 
   get headerConfig() {
     return this.headerConfigService.headerConfig; // returns computed signal
@@ -64,7 +62,7 @@ export class HeaderComponent {
   onSearchClicked(): void {
     console.log('🔍 Search clicked');
     console.log(`➡️ Navigating to route: /dashboard/search`)
-    this.router.navigate(['/dashboard/search']);
+    window.location.href = '/dashboard/search';
   }
 
   onUserInfoClicked(): void {

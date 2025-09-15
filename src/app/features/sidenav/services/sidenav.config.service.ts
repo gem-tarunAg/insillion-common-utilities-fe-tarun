@@ -1,7 +1,4 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter, startWith, map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
 import sidenavJSON from '../config/sidenav.configuration.json';
 import {
   SidenavConfig,
@@ -26,7 +23,7 @@ export class SidenavConfigService {
   // State signals
   private readonly _collapsed = signal(false);
   private readonly _logoOpacity = signal(1);
-  private readonly _currentRoute: ReturnType<typeof toSignal<string>>;
+  private readonly _currentRoute = signal(this.getCurrentLocation());
 
   // Pre-computed data for performance
   private readonly expandedItems: Item[];
@@ -57,20 +54,51 @@ export class SidenavConfigService {
   readonly collapsed = computed(() => this._collapsed());
   readonly logoOpacity = computed(() => this._logoOpacity());
 
-  constructor(private readonly router: Router) {
-    this._currentRoute = toSignal(
-      this.router.events.pipe(
-        filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        ),
-        map((event: NavigationEnd) => event.urlAfterRedirects),
-        startWith(this.router.url)
-      ),
-      { initialValue: this.router.url }
-    );
-
+  constructor() {
     this.expandedItems = this.expandMenuItems(this.baseConfig.items);
     this.lookupMaps = this.buildLookupMaps(this.expandedItems);
+    
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', () => {
+      this.updateCurrentRoute();
+    });
+
+    // Listen for pushstate/replacestate (programmatic navigation)
+    this.interceptHistoryMethods();
+  }
+
+  // ===== LOCATION MANAGEMENT =====
+
+  /**
+   * Get current location pathname
+   */
+  private getCurrentLocation(): string {
+    return window.location.pathname;
+  }
+
+  /**
+   * Update the current route signal
+   */
+  private updateCurrentRoute(): void {
+    this._currentRoute.set(this.getCurrentLocation());
+  }
+
+  /**
+   * Intercept history methods to detect programmatic navigation
+   */
+  private interceptHistoryMethods(): void {
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = (...args) => {
+      originalPushState.apply(history, args);
+      this.updateCurrentRoute();
+    };
+
+    history.replaceState = (...args) => {
+      originalReplaceState.apply(history, args);
+      this.updateCurrentRoute();
+    };
   }
 
   // ===== STATE MANAGEMENT =====
@@ -95,8 +123,9 @@ export class SidenavConfigService {
 
     const route = this.lookupMaps.bindKeyToRoute[bindKey];
     if (!route) return false;
+    
     console.log(`➡️ Navigating to route: ${route}`);
-    this.router.navigate([route]);
+    window.location.href = route;
     return true;
   }
 
@@ -267,7 +296,7 @@ export class SidenavConfigService {
     // Generate dynamic data for menu items
     Object.entries(this.baseConfig.menuItemsConfig).forEach(
       ([bindKey, config]) => {
-        const isActive = this.isActiveRoute(config.route, routeToUse); // ✅ fixed
+        const isActive = this.isActiveRoute(config.route, routeToUse);
         const camelKey = this.toCamelCase(bindKey);
 
         (dynamicData as any)[`${camelKey}Icon`] = this.getIconPath(
@@ -287,7 +316,7 @@ export class SidenavConfigService {
 
     // Find the active menu item order
     const activeItem = Object.entries(this.baseConfig.menuItemsConfig).find(
-      ([, config]) => this.isActiveRoute(config.route, routeToUse) // ✅ fixed
+      ([, config]) => this.isActiveRoute(config.route, routeToUse)
     );
 
     if (!activeItem) return -1;

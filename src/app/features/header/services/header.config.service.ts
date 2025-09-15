@@ -1,7 +1,4 @@
-import { Injectable, computed } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter, startWith, map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Injectable, computed, signal } from '@angular/core';
 import headerJSON from '../config/header.configuration.json';
 import { HeaderConfig } from '../models/header.config.interface';
 import {
@@ -15,8 +12,8 @@ export class HeaderConfigService {
   // Base config is immutable
   private readonly baseConfig = headerJSON as HeaderConfig;
 
-  // Current route signal
-  private readonly _currentRoute: ReturnType<typeof toSignal<string>>;
+  // Current route signal - manually managed
+  private readonly _currentRoute = signal(this.getCurrentLocation());
 
   headerConfig = computed(() => {
     const userData = this.userDataService.userData();
@@ -34,20 +31,46 @@ export class HeaderConfigService {
     };
   });
 
-  constructor(
-    private userDataService: UserDataService,
-    private router: Router
-  ) {
-    this._currentRoute = toSignal(
-      this.router.events.pipe(
-        filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        ),
-        map((event: NavigationEnd) => event.urlAfterRedirects),
-        startWith(this.router.url)
-      ),
-      { initialValue: this.router.url }
-    );
+  constructor(private userDataService: UserDataService) {
+    // Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', () => {
+      this.updateCurrentRoute();
+    });
+
+    // Listen for pushstate/replacestate (programmatic navigation)
+    this.interceptHistoryMethods();
+  }
+
+  /**
+   * Get current location pathname
+   */
+  private getCurrentLocation(): string {
+    return window.location.pathname;
+  }
+
+  /**
+   * Update the current route signal
+   */
+  private updateCurrentRoute(): void {
+    this._currentRoute.set(this.getCurrentLocation());
+  }
+
+  /**
+   * Intercept history methods to detect programmatic navigation
+   */
+  private interceptHistoryMethods(): void {
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = (...args) => {
+      originalPushState.apply(history, args);
+      this.updateCurrentRoute();
+    };
+
+    history.replaceState = (...args) => {
+      originalReplaceState.apply(history, args);
+      this.updateCurrentRoute();
+    };
   }
 
   /**
