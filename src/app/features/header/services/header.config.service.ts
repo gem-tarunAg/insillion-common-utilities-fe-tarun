@@ -6,18 +6,16 @@ import {
   hasChildren,
 } from '../../../shared/models/shared.config.interface';
 import { UserDataService } from '../../../core/services/user.data.service';
+import { RoutingService } from '../../../core/services/routing.service';
 
 @Injectable({ providedIn: 'root' })
 export class HeaderConfigService {
   // Base config is immutable
   private readonly baseConfig = headerJSON as HeaderConfig;
 
-  // Current route signal - manually managed
-  private readonly _currentRoute = signal(this.getCurrentLocation());
-
   headerConfig = computed(() => {
     const userData = this.userDataService.userData();
-    const currentRoute = this._currentRoute();
+    const currentRoute = this.routingService.currentRoute();
 
     // Recursively patch all items (including modals) in a single pass
     const patchedItems =
@@ -31,53 +29,16 @@ export class HeaderConfigService {
     };
   });
 
-  constructor(private userDataService: UserDataService) {
-    // Listen for popstate events (back/forward navigation)
-    window.addEventListener('popstate', () => {
-      this.updateCurrentRoute();
-    });
-
-    // Listen for pushstate/replacestate (programmatic navigation)
-    this.interceptHistoryMethods();
-  }
-
-  /**
-   * Get current location pathname
-   */
-  private getCurrentLocation(): string {
-    return window.location.pathname;
-  }
-
-  /**
-   * Update the current route signal
-   */
-  private updateCurrentRoute(): void {
-    this._currentRoute.set(this.getCurrentLocation());
-  }
-
-  /**
-   * Intercept history methods to detect programmatic navigation
-   */
-  private interceptHistoryMethods(): void {
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-
-    history.pushState = (...args) => {
-      originalPushState.apply(history, args);
-      this.updateCurrentRoute();
-    };
-
-    history.replaceState = (...args) => {
-      originalReplaceState.apply(history, args);
-      this.updateCurrentRoute();
-    };
-  }
+  constructor(
+    private userDataService: UserDataService,
+    private routingService: RoutingService
+  ) {}
 
   /**
    * Check if the search route is active
    */
   private isSearchActive(currentRoute: string): boolean {
-    return currentRoute === '/dashboard/search';
+    return this.routingService.isActiveRoute('/dashboard/search');
   }
 
   /**

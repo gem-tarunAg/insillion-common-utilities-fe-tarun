@@ -13,6 +13,7 @@ import {
   hasChildren,
   isMenuItemPlaceholder,
 } from '../../../shared/models/shared.config.interface';
+import { RoutingService } from '../../../core/services/routing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,6 @@ export class SidenavConfigService {
   // State signals
   private readonly _collapsed = signal(false);
   private readonly _logoOpacity = signal(1);
-  private readonly _currentRoute = signal(this.getCurrentLocation());
 
   // Pre-computed data for performance
   private readonly expandedItems: Item[];
@@ -36,7 +36,7 @@ export class SidenavConfigService {
   // Computed configuration
   readonly sidenavConfig = computed(() => {
     const collapsed = this._collapsed();
-    const currentRoute = this._currentRoute();
+    const currentRoute = this.routingService.currentRoute();
     const dynamicData = this.buildDynamicData(collapsed, currentRoute);
 
     return {
@@ -54,51 +54,9 @@ export class SidenavConfigService {
   readonly collapsed = computed(() => this._collapsed());
   readonly logoOpacity = computed(() => this._logoOpacity());
 
-  constructor() {
+  constructor(private routingService: RoutingService) {
     this.expandedItems = this.expandMenuItems(this.baseConfig.items);
     this.lookupMaps = this.buildLookupMaps(this.expandedItems);
-    
-    // Listen for popstate events (back/forward navigation)
-    window.addEventListener('popstate', () => {
-      this.updateCurrentRoute();
-    });
-
-    // Listen for pushstate/replacestate (programmatic navigation)
-    this.interceptHistoryMethods();
-  }
-
-  // ===== LOCATION MANAGEMENT =====
-
-  /**
-   * Get current location pathname
-   */
-  private getCurrentLocation(): string {
-    return window.location.pathname;
-  }
-
-  /**
-   * Update the current route signal
-   */
-  private updateCurrentRoute(): void {
-    this._currentRoute.set(this.getCurrentLocation());
-  }
-
-  /**
-   * Intercept history methods to detect programmatic navigation
-   */
-  private interceptHistoryMethods(): void {
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
-
-    history.pushState = (...args) => {
-      originalPushState.apply(history, args);
-      this.updateCurrentRoute();
-    };
-
-    history.replaceState = (...args) => {
-      originalReplaceState.apply(history, args);
-      this.updateCurrentRoute();
-    };
   }
 
   // ===== STATE MANAGEMENT =====
@@ -123,30 +81,21 @@ export class SidenavConfigService {
 
     const route = this.lookupMaps.bindKeyToRoute[bindKey];
     if (!route) return false;
-    
+
     console.log(`➡️ Navigating to route: ${route}`);
-    window.location.href = route;
+    window.location.hash = route;
     return true;
   }
 
   /** 🔑 Updated active route detection */
-  isActiveRoute(route: string, currentRoute?: string): boolean {
-    const routeToCheck = this.normalize(currentRoute || this._currentRoute());
-    const baseRoute = this.normalize(route);
-
-    return (
-      routeToCheck === baseRoute || routeToCheck.startsWith(baseRoute + '/')
-    );
-  }
-
-  private normalize(url: string): string {
-    return url.replace(/\/+$/, ''); // remove trailing slashes
+  isActiveRoute(route: string): boolean {
+    return this.routingService.isActiveRoute(route);
   }
 
   // ===== PUBLIC GETTERS FOR COMPONENT USE =====
 
   getCurrentRoute(): string {
-    return this._currentRoute();
+    return this.routingService.currentRoute();
   }
 
   getMenuItemsConfig(): { [key: string]: MenuItemConfig } {
@@ -269,7 +218,7 @@ export class SidenavConfigService {
     collapsed: boolean,
     currentRoute?: string
   ): SidenavDynamicData {
-    const routeToUse = currentRoute || this._currentRoute();
+    const routeToUse = currentRoute || this.routingService.currentRoute();
     const indicatorPosition = this.calculateMenuIndicatorPosition(routeToUse);
 
     // Initialize with base properties first
@@ -296,7 +245,7 @@ export class SidenavConfigService {
     // Generate dynamic data for menu items
     Object.entries(this.baseConfig.menuItemsConfig).forEach(
       ([bindKey, config]) => {
-        const isActive = this.isActiveRoute(config.route, routeToUse);
+        const isActive = this.routingService.isActiveRoute(config.route);
         const camelKey = this.toCamelCase(bindKey);
 
         (dynamicData as any)[`${camelKey}Icon`] = this.getIconPath(
@@ -312,11 +261,11 @@ export class SidenavConfigService {
 
   // Add this method to calculate menu indicator position
   private calculateMenuIndicatorPosition(currentRoute?: string): number {
-    const routeToUse = currentRoute || this._currentRoute();
+    const routeToUse = currentRoute || this.routingService.currentRoute();
 
     // Find the active menu item order
     const activeItem = Object.entries(this.baseConfig.menuItemsConfig).find(
-      ([, config]) => this.isActiveRoute(config.route, routeToUse)
+      ([, config]) => this.routingService.isActiveRoute(config.route)
     );
 
     if (!activeItem) return -1;
@@ -329,7 +278,10 @@ export class SidenavConfigService {
   }
 
   getDynamicData(): SidenavDynamicData {
-    return this.buildDynamicData(this._collapsed(), this._currentRoute());
+    return this.buildDynamicData(
+      this._collapsed(),
+      this.routingService.currentRoute()
+    );
   }
 
   private patchDynamicItem(item: Item, dynamicData: SidenavDynamicData): Item {
@@ -363,7 +315,7 @@ export class SidenavConfigService {
           ) {
             patchedItem = {
               ...patchedItem,
-              classes: [...patchedItem.classes, 'active'],
+              classes: [...(patchedItem.classes || []), 'active'],
             };
           }
           break;
@@ -374,10 +326,10 @@ export class SidenavConfigService {
             this.lookupMaps.bindKeyToRoute[patchedItem.bindKey]
           ) {
             const route = this.lookupMaps.bindKeyToRoute[patchedItem.bindKey];
-            if (this.isActiveRoute(route)) {
+            if (this.routingService.isActiveRoute(route)) {
               patchedItem = {
                 ...patchedItem,
-                classes: [...patchedItem.classes, 'active'],
+                classes: [...(patchedItem.classes || []), 'active'],
               };
             }
           }

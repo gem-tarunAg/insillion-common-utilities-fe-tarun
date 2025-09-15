@@ -4,7 +4,6 @@ import { RenderItemComponent } from '../../../../shared/components/render-item/r
 import { HeaderDynamicState } from '../../models/header.config.interface';
 import { HeaderConfigService } from '../../services/header.config.service';
 
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -14,11 +13,12 @@ import { HeaderConfigService } from '../../services/header.config.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
-  dynamicState: HeaderDynamicState = { 
-    dropdownOpen: false 
+  dynamicState: HeaderDynamicState = {
+    dropdownOpen: false,
   };
 
-  private headerConfigService: HeaderConfigService = inject(HeaderConfigService);
+  private headerConfigService: HeaderConfigService =
+    inject(HeaderConfigService);
 
   get headerConfig() {
     return this.headerConfigService.headerConfig; // returns computed signal
@@ -42,7 +42,10 @@ export class HeaderComponent {
     return classes.join(' ');
   }
 
-  updateState<K extends keyof HeaderDynamicState>(key: K, value: boolean): void {
+  updateState<K extends keyof HeaderDynamicState>(
+    key: K,
+    value: boolean
+  ): void {
     this.dynamicState = { ...this.dynamicState, [key]: value };
   }
 
@@ -61,8 +64,8 @@ export class HeaderComponent {
   // Actions
   onSearchClicked(): void {
     console.log('🔍 Search clicked');
-    console.log(`➡️ Navigating to route: /dashboard/search`)
-    window.location.href = '/dashboard/search';
+    console.log(`➡️ Navigating to route: /dashboard/search`);
+    window.location.hash = '/dashboard/search';
   }
 
   onUserInfoClicked(): void {
