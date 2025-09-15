@@ -53,6 +53,7 @@ export class SidenavConfigService {
   // Public state getters
   readonly collapsed = computed(() => this._collapsed());
   readonly logoOpacity = computed(() => this._logoOpacity());
+  readonly currentRoute = computed(() => this.routingService.currentRoute());
 
   constructor(private routingService: RoutingService) {
     this.expandedItems = this.expandMenuItems(this.baseConfig.items);
@@ -110,6 +111,27 @@ export class SidenavConfigService {
 
   getItemFromId(id: string): Item | undefined {
     return this.lookupMaps.idToItem[id];
+  }
+
+  // Get menu indicator position
+  getMenuIndicatorPosition(): number {
+    // Find the active menu item order
+    const activeItem = Object.entries(this.baseConfig.menuItemsConfig).find(
+      ([, config]) => this.routingService.isActiveRoute(config.route)
+    );
+
+    if (!activeItem) {
+      console.log('❌ No active item found');
+      return -1;
+    }
+
+    const activeOrder = activeItem[1].order;
+
+    // Calculate position based on order (accounting for 0-based indexing)
+    // Each menu item has height of ~3.5rem (1rem padding + content + 0.5rem margin)
+    const position = (activeOrder - 1) * 3.5;
+    
+    return position;
   }
 
   // ===== PRIVATE METHODS =====
@@ -218,8 +240,7 @@ export class SidenavConfigService {
     collapsed: boolean,
     currentRoute?: string
   ): SidenavDynamicData {
-    const routeToUse = currentRoute || this.routingService.currentRoute();
-    const indicatorPosition = this.calculateMenuIndicatorPosition(routeToUse);
+    const indicatorPosition = this.getMenuIndicatorPosition();
 
     // Initialize with base properties first
     const dynamicData: SidenavDynamicData = {
@@ -259,29 +280,8 @@ export class SidenavConfigService {
     return dynamicData;
   }
 
-  // Add this method to calculate menu indicator position
-  private calculateMenuIndicatorPosition(currentRoute?: string): number {
-    const routeToUse = currentRoute || this.routingService.currentRoute();
-
-    // Find the active menu item order
-    const activeItem = Object.entries(this.baseConfig.menuItemsConfig).find(
-      ([, config]) => this.routingService.isActiveRoute(config.route)
-    );
-
-    if (!activeItem) return -1;
-
-    const activeOrder = activeItem[1].order;
-
-    // Calculate position based on order (accounting for 0-based indexing)
-    // Each menu item has height of ~3.5rem (1rem padding + content + 0.5rem margin)
-    return (activeOrder - 1) * 3.5;
-  }
-
   getDynamicData(): SidenavDynamicData {
-    return this.buildDynamicData(
-      this._collapsed(),
-      this.routingService.currentRoute()
-    );
+    return this.buildDynamicData(this._collapsed());
   }
 
   private patchDynamicItem(item: Item, dynamicData: SidenavDynamicData): Item {
@@ -307,7 +307,7 @@ export class SidenavConfigService {
           break;
 
         case 'container':
-          // Handle menu indicator - just add active class, positioning via getItemStyles
+          // Handle menu indicator - add active class if position is valid
           if (
             patchedItem.bindKey === 'menuIndicator' &&
             dynamicValue &&

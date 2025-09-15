@@ -13,10 +13,10 @@ import { RenderItemComponent } from '../../../../shared/components/render-item/r
   encapsulation: ViewEncapsulation.None
 })
 export class SidenavComponent {
-  private readonly sidenavConfigServie: SidenavConfigService = inject(SidenavConfigService);
+  private readonly sidenavConfigService: SidenavConfigService = inject(SidenavConfigService);
 
   get sidenavConfig() {
-    return this.sidenavConfigServie.sidenavConfig;
+    return this.sidenavConfigService.sidenavConfig;
   }
 
   get containerClasses(): string {
@@ -26,9 +26,9 @@ export class SidenavComponent {
   // Dynamic state for template compatibility
   get dynamicState(): SidenavDynamicState {
     return {
-      collapsed: this.sidenavConfigServie.collapsed(),
-      logoOpacity: this.sidenavConfigServie.logoOpacity(),
-      activeRoute: '', // Not needed for current implementation
+      collapsed: this.sidenavConfigService.collapsed(),
+      logoOpacity: this.sidenavConfigService.logoOpacity(),
+      activeRoute: this.sidenavConfigService.currentRoute(),
     };
   }
 
@@ -41,10 +41,21 @@ export class SidenavComponent {
       styles['logo-image'] = { opacity: this.dynamicState.logoOpacity };
     }
     
-    // Handle menu indicator positioning
-    const position = this.getMenuIndicatorPosition();
-    if (position !== null) {
-      styles['sidenav-active-indicator'] = { top: position + 'rem' };
+    // Handle menu indicator positioning - use service method
+    const position = this.sidenavConfigService.getMenuIndicatorPosition();
+    if (position >= 0) {
+      styles['sidenav-active-indicator'] = { 
+        top: position + 'rem',
+        opacity: 1,
+        visibility: 'visible'
+      };
+    } else {
+      // Hide indicator when no active route
+      styles['sidenav-active-indicator'] = { 
+        top: '-100px',
+        opacity: 0,
+        visibility: 'hidden'
+      };
     }
     
     return styles;
@@ -56,7 +67,6 @@ export class SidenavComponent {
     
     // Add collapsed class to sidebar container if needed
     if (this.dynamicState.collapsed) {
-      // This would be handled by containerClasses, but keeping for consistency
       classes['sidebar'] = 'collapsed';
     }
     
@@ -76,38 +86,23 @@ export class SidenavComponent {
   }
 
   onToggleMenu(): void {
-    this.sidenavConfigServie.setLogoOpacity(0);
+    console.log('🎛️ Toggling menu');
+    this.sidenavConfigService.setLogoOpacity(0);
 
     setTimeout(() => {
-      this.sidenavConfigServie.toggleCollapsed();
-      this.sidenavConfigServie.setLogoOpacity(1);
+      this.sidenavConfigService.toggleCollapsed();
+      this.sidenavConfigService.setLogoOpacity(1);
     }, 150);
   }
 
   onMenuItemClick(itemId: string): void {
     if (!itemId) return;
+    
     console.log('🖱️ Menu item clicked:', itemId);
-    const success = this.sidenavConfigServie.navigateByItemId(itemId);
+    const success = this.sidenavConfigService.navigateByItemId(itemId);
+    
     if (!success) {
       console.warn(`⚠️ Failed to navigate for item: ${itemId}`);
     }
   }
-
-  private getMenuIndicatorPosition(): number | null {
-    const currentRoute = this.sidenavConfigServie.getCurrentRoute();
-    
-    // Find the active menu item order from the config
-    const menuItemsConfig = this.sidenavConfigServie.getMenuItemsConfig();
-    const activeItem = Object.entries(menuItemsConfig).find(
-      ([_, config]) => config.route === currentRoute
-    );
-
-    if (!activeItem) return null;
-
-    const activeOrder = activeItem[1].order;
-    // Calculate position based on order (accounting for 0-based indexing)
-    // Each menu item has height of ~3.5rem
-    return (activeOrder - 1) * 3.5;
-  }
-
 }
