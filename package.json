@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:elements": "ng build --output-hashing none --configuration production",
-    "build:elements:gh": "ng build --configuration=production --base-href=/insillion-common-utilities-fe-tarun/",
+    "build:elements:gh": "ng build --output-hashing none --configuration production --base-href=/insillion-common-utilities-fe-tarun/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
