@@ -31,8 +31,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build web components
+      - name: Build web components with correct base-href
         run: npm run build:elements:gh
+
+      - name: Debug - List build output
+        run: |
+          echo "Contents of dist directory:"
+          find ./dist -type f -name "*.html" -o -name "*.js" -o -name "*.css" | head -20
+          echo "Contents of publish directory:"
+          ls -la ./dist/insillion-common-utilities-fe-tarun/browser/ || echo "Directory not found"
+
+      - name: Create 404.html for SPA routing
+        run: |
+          if [ -f "./dist/insillion-common-utilities-fe-tarun/browser/index.html" ]; then
+            cp ./dist/insillion-common-utilities-fe-tarun/browser/index.html ./dist/insillion-common-utilities-fe-tarun/browser/404.html
+            echo "404.html created successfully"
+          else
+            echo "index.html not found in expected location"
+            find ./dist -name "index.html"
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
