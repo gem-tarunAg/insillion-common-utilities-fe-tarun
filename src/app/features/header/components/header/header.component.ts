@@ -76,6 +76,7 @@ export class HeaderComponent {
   onLogout(): void {
     this.updateState('dropdownOpen', false);
     console.log('🚪 Logout clicked');
+    window.location.hash = '/login';
     // Add logout logic here
   }
 }
