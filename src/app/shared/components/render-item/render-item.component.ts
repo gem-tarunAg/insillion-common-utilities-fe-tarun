@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import {
   DynamicState,
   Item,
   ItemClickEvent,
 } from '../../models/shared.config.interface';
+import { ApiService } from '../../../core/services/api.service';
 
 
 @Component({
@@ -19,6 +20,12 @@ export class RenderItemComponent {
   @Input() itemStyles: { [itemId: string]: { [key: string]: any } } = {};
   @Input() dynamicClasses: { [itemId: string]: string } = {};
   @Output() itemClick = new EventEmitter<ItemClickEvent>();
+
+  private apiService: ApiService = inject(ApiService);
+   
+  get assetsPath() {
+    return this.apiService.COMMON_ASSETS_PATH;
+  }
 
   getClasses(classes: string[] = []): string {
     return classes.join(' ');

@@ -39,7 +39,7 @@
       <img 
         [class]="getClasses(item.classes) + getDynamicClasses(item)" 
         [ngStyle]="getItemStyles(item.id)"
-        [src]="item.imageSrc" 
+        [src]="assetsPath + item.imageSrc" 
         [alt]="item.altText"
         (click)="onItemClick(item.clickAction || '', item.id)" />
     }
