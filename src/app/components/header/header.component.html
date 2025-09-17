@@ -1,0 +1,39 @@
+<nav class="bg-neutral-100 py-sm px-lg d-flex justify-content-end align-items-start shadow-md">
+  <div class="gap-mdl d-flex align-items-center">
+
+    <button class="search-icon rounded-sm d-flex align-items-center justify-content-center border-none bg-neutral-50"
+      [class.active]="headerService.isSearchActive()" (click)="onSearchClick()">
+      <img [src]="apiService.COMMON_ASSETS_PATH + 'assets/icons/search-icon.svg'" alt="Search">
+    </button>
+
+    <div class="cursor-click d-flex align-items-center gap-sm" (click)="onUserInfoClick()">
+
+      <img [src]="apiService.COMMON_ASSETS_PATH + userDataService.userInfo().userAvatar" alt="User Avatar"
+        class="rounded-default">
+
+      <span class="font-medium text-sm text-dark">
+        {{ userDataService.userInfo().userName }}
+      </span>
+
+      <img [src]="apiService.COMMON_ASSETS_PATH + 'assets/icons/caret-down.svg'" alt="Dropdown"
+        [style.transform]="state.dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
+    </div>
+
+  </div>
+
+  @if (state.dropdownOpen) {
+  <div class="logout-menu rounded-default mt-5 ms-5 shadow-md ps-3 pe-5 py-3 border-sm-neutral-250 absolute bg-surface">
+
+    @for (item of headerService.headerMenuItems(); track item.id) {
+    <button class="dropdown-item d-flex align-items-center gap-md" (click)="onMenuItemClick(item)">
+
+      <img [src]="apiService.COMMON_ASSETS_PATH + item.icon" [alt]="item.label + ' Icon'">
+
+      <span class="text-red font-medium text-base">
+        {{ item.label }}
+      </span>
+    </button>
+    }
+  </div>
+  }
+</nav>

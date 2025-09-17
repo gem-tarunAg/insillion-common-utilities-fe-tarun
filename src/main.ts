@@ -1,8 +1,8 @@
 import 'zone.js';
 import { createCustomElement } from '@angular/elements';
 import { createApplication } from '@angular/platform-browser';
-import { HeaderComponent } from './app/features/header/components/header/header.component';
-import { SidenavComponent } from './app/features/sidenav/components/sidenav/sidenav.component';
+import { HeaderComponent } from './app/components/header/header.component'
+import { SidenavComponent } from './app/components/sidenav/sidenav.component'
 
 (async () => {
   const appRef = await createApplication();

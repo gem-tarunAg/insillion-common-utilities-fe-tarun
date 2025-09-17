@@ -1,0 +1,40 @@
+<div
+  class="sidenav py-lg px-md d-flex flex-column align-items-center shadow-sm bg-neutral-100 relative transition-ease-in-out-03"
+  [class.collapsed]="sidenavService.isCollapsed()">
+  <div class="sidenav-logo-container d-flex align-items-center justify-content-center transition-ease-in-out-03">
+    <img [src]="apiService.COMMON_ASSETS_PATH + logoSrc()" alt="Logo" class="sidenav-logo-image"
+      [style.opacity]="logoOpacity()">
+  </div>
+
+  <div class="border-sm-neutral-225 my-3 w-100"></div>
+
+  <div class="relative w-100">
+    <div class="sidenav-active-indicator absolute d-flex align-items-center" [style.top.rem]="indicatorPosition()"
+      [style.opacity]="indicatorPosition() >= 0 ? 1 : 0"
+      [style.visibility]="indicatorPosition() >= 0 ? 'visible' : 'hidden'">
+      <div class="sidenav-active-indicator-inner bg-primary transition-ease-in-out-03"></div>
+    </div>
+
+    @for (item of sidenavService.menuItems(); track item.id) {
+    <button
+      class="sidenav-items d-flex align-items-center bg-inherit rounded-default gap-smd p-3 w-100 transition-ease-in-out-02"
+      [class.active]="sidenavService.isActiveRoute(item.route)" (click)="onMenuItemClick(item)">
+
+      <img [src]="apiService.COMMON_ASSETS_PATH + getMenuItemIcon(item)" [alt]="item.label"
+        class="sidenav-item-icon transition-ease-in-out-02">
+
+      @if (!sidenavService.isCollapsed()) {
+      <span class="sidenav-item-label text-sm font-regular text-dark transition-ease-in-out-03">
+        {{ item.label }}
+      </span>
+      }
+    </button>
+    }
+  </div>
+
+  <button
+    class="sidenav-toggle p-2 d-flex bg-neutral-100 transition-ease-in-out-03 absolute shadow-sm border-sm-neutral-225"
+    (click)="onToggleMenu()">
+    <img [src]="apiService.COMMON_ASSETS_PATH + toggleIconSrc()" alt="Toggle Menu" class="toggle-icon">
+  </button>
+</div>

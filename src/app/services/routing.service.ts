@@ -14,19 +14,23 @@ export class RoutingService {
     });
   }
 
+  public navigateTo(route: string): void {
+    window.location.hash = route;
+  }
+
   private updateCurrentRoute(): void {
     this._currentRoute.set(this.normalize(window.location.hash));
   }
-  
+
   /**
    * Check if a given route is active.
    */
   public isActiveRoute(route: string): boolean {
     const normalizedCurrentRoute = this.normalize(this.currentRoute());
-    const normalizedRoute = this.normalize(route); // Check for an exact match first
+    const normalizedRoute = this.normalize(route);
     if (normalizedCurrentRoute === normalizedRoute) {
       return true;
-    } // Then check for a sub-route match
+    }
     return normalizedCurrentRoute.startsWith(normalizedRoute + '/');
   }
 
@@ -34,8 +38,6 @@ export class RoutingService {
    * Normalizes a URL by removing the '#', leading slash, and any trailing slashes.
    */
   private normalize(url: string): string {
-    // Correctly handles URLs like #/dashboard, #dashboard, and dashboard/
-    // so that the result is 'dashboard'
     return url.replace(/^#?\/?/, '').replace(/\/+$/, '');
   }
 }

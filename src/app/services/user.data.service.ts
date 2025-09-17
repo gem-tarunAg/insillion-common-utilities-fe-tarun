@@ -1,13 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
-  userData = signal({
+  _userInfo = signal({
     userName: 'John Doe',
     userAvatar: 'assets/images/profile.png',
   });
 
+  readonly userInfo = computed(() => this._userInfo());
+
   updateUserData(data: Partial<{ userName: string; userAvatar: string }>) {
-    this.userData.set({ ...this.userData(), ...data });
+    this._userInfo.set({ ...this._userInfo(), ...data });
   }
 }

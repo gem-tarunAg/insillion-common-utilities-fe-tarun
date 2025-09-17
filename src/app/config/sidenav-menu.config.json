@@ -1,0 +1,40 @@
+{
+  "menuItems": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "route": "/dashboard",
+      "icon": "assets/icons/dashboard.svg",
+      "iconActive": "assets/icons/dashboard-blue.svg",
+      "order": 1,
+      "roles": ["admin", "user"]
+    },
+    {
+      "id": "reports",
+      "label": "Reports", 
+      "route": "/reports",
+      "icon": "assets/icons/reports.svg",
+      "iconActive": "assets/icons/reports-blue.svg",
+      "order": 2,
+      "roles": ["admin", "user"]
+    },
+    {
+      "id": "group-products",
+      "label": "Group Products",
+      "route": "/group-products", 
+      "icon": "assets/icons/group.svg",
+      "iconActive": "assets/icons/group-blue.svg",
+      "order": 3,
+      "roles": ["admin"]
+    },
+    {
+      "id": "total-count",
+      "label": "Total Count",
+      "route": "/total-count",
+      "icon": "assets/icons/count.svg", 
+      "iconActive": "assets/icons/count-blue.svg",
+      "order": 4,
+      "roles": ["admin", "manager"]
+    }
+  ]
+}

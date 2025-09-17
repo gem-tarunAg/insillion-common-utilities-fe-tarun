@@ -1,0 +1,11 @@
+{
+  "menuItems": [
+    {
+      "id": "logout",
+      "label": "Log out",
+      "icon": "assets/icons/sign-out.svg",
+      "order": 1,
+      "roles": ["admin", "user", "manager"]
+    }
+  ]
+}
