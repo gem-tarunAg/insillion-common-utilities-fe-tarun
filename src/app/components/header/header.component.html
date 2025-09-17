@@ -22,7 +22,7 @@
   </div>
 
   @if (state.dropdownOpen) {
-  <div class="logout-menu rounded-default mt-5 ms-5 shadow-md ps-3 pe-5 py-3 border-sm-neutral-250 absolute bg-surface">
+  <div class="logout-menu rounded-default mt-5 ms-5 shadow-md ps-3 pe-5 py-3 border-sm-neutral-250 absolute bg-surface z-3">
 
     @for (item of headerService.headerMenuItems(); track item.id) {
     <button class="dropdown-item d-flex align-items-center gap-md" (click)="onMenuItemClick(item)">
