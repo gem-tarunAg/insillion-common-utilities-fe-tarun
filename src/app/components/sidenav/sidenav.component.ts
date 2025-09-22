@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, ElementRef } from '@angular/core';
+import { Component, computed, inject, signal, ElementRef, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { SidenavMenuItem } from '../../models/sidenav.interface';
 import { SidenavService } from '../../services/sidenav.service';
@@ -116,6 +116,16 @@ export class SidenavComponent {
   private clearHideTooltipTimeout(): void {
     if (this.hideTooltipTimeout) {
       clearTimeout(this.hideTooltipTimeout);
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (
+      !this.sidenavService.isCollapsed() &&
+      !this.elementRef.nativeElement.contains(event.target)
+    ) {
+      this.sidenavService.toggleSidebar();
     }
   }
 }
