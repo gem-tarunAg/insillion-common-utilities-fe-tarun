@@ -1,6 +1,7 @@
 <div
   class="sidenav py-lg px-md d-flex flex-column align-items-center shadow-sm bg-neutral-100 relative transition-ease-in-out-03"
-  [class.collapsed]="sidenavService.isCollapsed()">
+  [class.collapsed]="sidenavService.isCollapsed()"
+  (mouseleave)="onSidenavMouseLeave()">
   <div class="sidenav-logo-container d-flex align-items-center justify-content-center transition-ease-in-out-03">
     <img [src]="apiService.COMMON_ASSETS_PATH + logoSrc()" alt="Logo" class="sidenav-logo-image"
       [style.opacity]="logoOpacity()">
@@ -18,7 +19,9 @@
     @for (item of sidenavService.menuItems(); track item.id) {
     <button
       class="sidenav-items d-flex align-items-center bg-inherit rounded-default gap-smd p-3 w-100 transition-ease-in-out-02"
-      [class.active]="sidenavService.isActiveRoute(item.route)" (click)="onMenuItemClick(item)">
+      [class.active]="sidenavService.isActiveRoute(item.route)" (click)="onMenuItemClick(item)"
+      (mouseenter)="onMenuItemMouseEnter($event, item)"
+      (mouseleave)="onMenuItemMouseLeave()">
 
       <img [src]="apiService.COMMON_ASSETS_PATH + getMenuItemIcon(item)" [alt]="item.label"
         class="sidenav-item-icon transition-ease-in-out-02">
@@ -30,6 +33,14 @@
       }
     </button>
     }
+  </div>
+  
+  <div
+    class="sidenav-tooltip absolute px-3 py-2 bg-dark z-3 text-sm text-on-primary rounded-default shadow-sm"
+    [style.top.px]="tooltip().top"
+    [style.opacity]="tooltip().visible ? 1 : 0"
+    [style.visibility]="tooltip().visible ? 'visible' : 'hidden'">
+    {{ tooltip().text }}
   </div>
 
   <button

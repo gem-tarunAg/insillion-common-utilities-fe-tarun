@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ElementRef } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { SidenavMenuItem } from '../../models/sidenav.interface';
 import { SidenavService } from '../../services/sidenav.service';
@@ -16,10 +16,19 @@ export class SidenavComponent {
   readonly sidenavService = inject(SidenavService);
   readonly apiService = inject(ApiService);
   private routingService = inject(RoutingService);
+  private elementRef = inject(ElementRef);
+  private hideTooltipTimeout: any;
 
   // Logo opacity for smooth transitions
   private readonly _logoOpacity = signal<number>(1);
   readonly logoOpacity = computed(() => this._logoOpacity());
+
+  // Tooltip state
+  readonly tooltip = signal<{ visible: boolean; text: string; top: number }>({
+    visible: false,
+    text: '',
+    top: 0,
+  });
 
   // Computed properties for template
   readonly logoSrc = computed(() =>
@@ -63,5 +72,50 @@ export class SidenavComponent {
     return this.sidenavService.isActiveRoute(item.route)
       ? item.iconActive
       : item.icon;
+  }
+
+  // Tooltip handlers
+  onMenuItemMouseEnter(event: MouseEvent, item: SidenavMenuItem): void {
+    if (this.sidenavService.isCollapsed()) {
+      this.clearHideTooltipTimeout();
+
+      const menuItemElement = event.currentTarget as HTMLElement;
+      const sidenavRect = this.elementRef.nativeElement.getBoundingClientRect();
+      const menuItemRect = menuItemElement.getBoundingClientRect();
+
+      const top =
+        menuItemRect.top -
+        sidenavRect.top +
+        menuItemElement.offsetHeight / 2;
+
+      this.tooltip.set({
+        visible: true,
+        text: item.label,
+        top: top,
+      });
+    }
+  }
+
+  onMenuItemMouseLeave(): void {
+    this.hideTooltipTimeout = setTimeout(() => {
+      this.hideTooltip();
+    }, 100);
+  }
+
+  onSidenavMouseLeave(): void {
+    this.hideTooltip();
+  }
+
+  private hideTooltip(): void {
+    this.tooltip.set({
+      ...this.tooltip(),
+      visible: false,
+    });
+  }
+
+  private clearHideTooltipTimeout(): void {
+    if (this.hideTooltipTimeout) {
+      clearTimeout(this.hideTooltipTimeout);
+    }
   }
 }
