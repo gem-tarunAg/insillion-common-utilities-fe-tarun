@@ -11,7 +11,7 @@ export class SidenavService {
   private readonly config: SidenavConfig = menuConfig;
 
   // State signals
-  private readonly _isCollapsed = signal<boolean>(false);
+  private readonly _isCollapsed = signal<boolean>(true);
 
   // Public readonly signals
   readonly isCollapsed = computed(() => this._isCollapsed());
