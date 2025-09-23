@@ -3,7 +3,7 @@
     {
       "id": "dashboard",
       "label": "Dashboard",
-      "route": "/dashboard",
+      "route": "http://localhost:4202/#/dashboard",
       "icon": "assets/icons/dashboard.svg",
       "iconActive": "assets/icons/dashboard-blue.svg",
       "order": 1,

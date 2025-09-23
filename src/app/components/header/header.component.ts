@@ -25,7 +25,8 @@ export class HeaderComponent {
 
   onSearchClick(): void {
     console.log('🔍 Search clicked');
-    this.routingService.navigateTo('/dashboard/search');
+    // this.routingService.navigateTo('/dashboard/search');
+    window.location.href = "http://localhost:4202/#/dashboard/search"
   }
 
   onUserInfoClick(): void {

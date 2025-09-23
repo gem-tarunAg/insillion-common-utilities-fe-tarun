@@ -50,7 +50,8 @@ export class SidenavComponent {
   // Menu item click handler
   onMenuItemClick(item: SidenavMenuItem): void {
     console.log(`🖱️ Menu item clicked: ${item.label} (${item.route})`);
-    this.routingService.navigateTo(item.route);
+    // this.routingService.navigateTo(item.route);
+    window.location.href = item.route
   }
 
   // Toggle menu handler with smooth logo transition
