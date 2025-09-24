@@ -22,8 +22,8 @@
       "id": "total-count",
       "label": "Total Count",
       "route": "/total-count",
-      "icon": "assets/icons/count.svg", 
-      "iconActive": "assets/icons/count-blue.svg",
+      "icon": "assets/icons/group.svg", 
+      "iconActive": "assets/icons/group.svg",
       "order": 3,
       "roles": ["admin", "manager"]
     },
