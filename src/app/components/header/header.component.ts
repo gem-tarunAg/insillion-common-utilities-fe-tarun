@@ -25,8 +25,8 @@ export class HeaderComponent {
 
   onSearchClick(): void {
     console.log('🔍 Search clicked');
-    this.routingService.navigateTo('/dashboard/search');
-    // window.location.href = "https://d2fciuteqrodiu.cloudfront.net/login/#/dashboard/search"
+    // this.routingService.navigateTo('/dashboard/search');
+     window.location.href = "https://d2fciuteqrodiu.cloudfront.net/login/#/dashboard/search"
   }
 
   onUserInfoClick(): void {
