@@ -52,6 +52,7 @@ export class SidenavComponent {
     console.log(`🖱️ Menu item clicked: ${item.label} (${item.route})`);
     // this.routingService.navigateTo(item.route);
     window.location.href = item.route
+    window.location.href = "https://d2fciuteqrodiu.cloudfront.net/login/#/dashboard"
   }
 
   // Toggle menu handler with smooth logo transition
